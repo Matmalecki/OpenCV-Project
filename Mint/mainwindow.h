@@ -22,7 +22,6 @@ private:
     QThread * thread;
     Ui::MainWindow *ui;
     void setUpManager();
-
 signals:
     void sendSetup(int device);
     void sendToggleStream();

@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     setUpManager();
 }
 
@@ -36,6 +35,13 @@ void MainWindow::setUpManager()
     connect(this, SIGNAL(sendToggleStream()), manager, SLOT(receiveToggleStream()));
     connect(ui->playButton, SIGNAL(clicked(bool)), this, SLOT(receiveToggleStream()));
     connect(manager, SIGNAL(sendFrame(QImage)), this, SLOT(receiveFrame(QImage)));
+    connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), manager, SLOT(receiveBinaryThreshold(int)));
+    connect(ui->enableThresholdCheckbox, SIGNAL(toggled(bool)), manager, SLOT(receiveEnableBinaryThreshold()));
+    connect(thread, SIGNAL(finished()), manager, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
+
+
+    connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), ui->thresholdValue, SLOT(setNum(int)));
 
     managerTrigger->start();
     manager-> moveToThread(thread);
@@ -45,6 +51,7 @@ void MainWindow::setUpManager()
 
     emit sendSetup(0);
 }
+
 
 void MainWindow::receiveFrame(QImage frame)
 {

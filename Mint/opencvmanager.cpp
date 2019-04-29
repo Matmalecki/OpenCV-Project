@@ -46,6 +46,8 @@ void OpencvManager::receiveGrabFrame()
 void OpencvManager::process()
 {
      cvtColor(image, processedImage, CV_BGR2GRAY);
+     if (binaryThresholdEnable)
+        threshold(processedImage, processedImage, binaryThreshold, 255, CV_THRESH_BINARY);
 }
 
 void OpencvManager::receiveSetup(const int device)
@@ -72,3 +74,6 @@ void OpencvManager::receiveBinaryThreshold(int threshold)
 {
     binaryThreshold = threshold;
 }
+
+
+
