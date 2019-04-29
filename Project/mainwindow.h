@@ -27,7 +27,8 @@ signals:
     void sendToggleStream();
 
 private slots:
-    void receiveFrame(QImage frame);
+    void receiveProcessedFrame(QImage frame);
+    void receiveSourceFrame(QImage frame);
     void receiveToggleStream();
 
 };

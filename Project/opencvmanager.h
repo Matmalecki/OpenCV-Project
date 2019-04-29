@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/video/tracking.hpp>
 using namespace cv;
 
 
@@ -30,7 +31,8 @@ public:
     explicit OpencvManager(QObject * parent = 0);
     ~OpencvManager();
 signals:
-    void sendFrame(QImage frameProcessed);
+    void sendProcessedFrame(QImage frameProcessed);
+    void sendSourceFrame(QImage image);
     void sendStatus(QString msg, int code);
 public slots:
     void receiveSetup(const int device);

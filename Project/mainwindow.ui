@@ -6,21 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>998</width>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QLabel" name="videoField">
+   <widget class="QLabel" name="videoFieldProcessed">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>39</y>
-      <width>615</width>
-      <height>381</height>
+      <width>480</width>
+      <height>380</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -113,13 +113,32 @@
      <string>127</string>
     </property>
    </widget>
+   <widget class="QLabel" name="videoFieldSource">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>39</y>
+      <width>480</width>
+      <height>380</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::Box</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>640</width>
+     <width>998</width>
      <height>20</height>
     </rect>
    </property>

@@ -34,12 +34,12 @@ void MainWindow::setUpManager()
     connect(this, SIGNAL(sendSetup(int)), manager, SLOT(receiveSetup(int)));
     connect(this, SIGNAL(sendToggleStream()), manager, SLOT(receiveToggleStream()));
     connect(ui->playButton, SIGNAL(clicked(bool)), this, SLOT(receiveToggleStream()));
-    connect(manager, SIGNAL(sendFrame(QImage)), this, SLOT(receiveFrame(QImage)));
+    connect(manager, SIGNAL(sendProcessedFrame(QImage)), this, SLOT(receiveProcessedFrame(QImage)));
+    connect(manager, SIGNAL(sendSourceFrame(QImage)), this, SLOT(receiveSourceFrame(QImage)));
     connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), manager, SLOT(receiveBinaryThreshold(int)));
     connect(ui->enableThresholdCheckbox, SIGNAL(toggled(bool)), manager, SLOT(receiveEnableBinaryThreshold()));
     connect(thread, SIGNAL(finished()), manager, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
-
 
     connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), ui->thresholdValue, SLOT(setNum(int)));
 
@@ -53,10 +53,17 @@ void MainWindow::setUpManager()
 }
 
 
-void MainWindow::receiveFrame(QImage frame)
+void MainWindow::receiveProcessedFrame(QImage frame)
 {
-    ui->videoField->setPixmap(QPixmap::fromImage(frame));
+    ui->videoFieldProcessed->setPixmap(QPixmap::fromImage(frame));
 }
+
+void MainWindow::receiveSourceFrame(QImage frame)
+{
+    ui->videoFieldSource->setPixmap(QPixmap::fromImage(frame));
+}
+
+
 
 void MainWindow::receiveToggleStream()
 {

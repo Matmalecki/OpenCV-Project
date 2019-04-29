@@ -35,17 +35,26 @@ void OpencvManager::receiveGrabFrame()
     cap->read(image);
     if (image.empty()) return;
 
+
+
     process();
 
-    QImage output((const unsigned char *)processedImage.data, processedImage.cols, processedImage.rows, QImage::Format_Indexed8);
+    QImage outputProcessed((const unsigned char *)processedImage.data, processedImage.cols, processedImage.rows, QImage::Format_Indexed8);
+    QImage outputSource((const unsigned char *)image.data, image.cols, image.rows, QImage::Format_RGB888);
 
+    emit sendSourceFrame(outputSource);
 
-    emit sendFrame(output);
+    emit sendProcessedFrame(outputProcessed);
+
 }
 
 void OpencvManager::process()
 {
+
+     //set up
      cvtColor(image, processedImage, CV_BGR2GRAY);
+     cvtColor(image, image,CV_BGR2RGB);
+
      if (binaryThresholdEnable)
         threshold(processedImage, processedImage, binaryThreshold, 255, CV_THRESH_BINARY);
 }
