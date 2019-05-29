@@ -13,11 +13,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        opencvmanager.cpp
+        opencvmanager.cpp \
+        person.cpp
 
 HEADERS += \
         mainwindow.h \
-        opencvmanager.h
+        opencvmanager.h \
+        person.h
 
 FORMS += \
         mainwindow.ui
@@ -31,3 +33,6 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../openc
 
 INCLUDEPATH += $$PWD/../../../../../../opencv/build/include
 DEPENDPATH += $$PWD/../../../../../../opencv/build/include
+
+RESOURCES += \
+    resources.qrc

@@ -2,11 +2,12 @@
 #define OPENCVMANAGER_H
 
 #include <QObject>
-#include <QImage>)
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/video/tracking.hpp>
+#include <QImage>
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/videoio.hpp"
+#include <opencv2/highgui.hpp>
+#include <opencv2/video.hpp>
 using namespace cv;
 
 
@@ -16,31 +17,26 @@ class OpencvManager : public QObject {
 
 private:
     Mat image;
-    Mat processedImage;
     VideoCapture * cap;
+
+    Ptr<BackgroundSubtractorMOG2>  bgsubtractor;
 
     bool status;
     bool toggleStream;
-    bool binaryThresholdEnable;
-    int binaryThreshold;
 
     void process();
-    void checkIfDeviceAlreadyOpened(const int device);
+    void checkIfDeviceAlreadyOpened(QByteArray device);
 
 public:
     explicit OpencvManager(QObject * parent = 0);
     ~OpencvManager();
 signals:
-    void sendProcessedFrame(QImage frameProcessed);
     void sendSourceFrame(QImage image);
     void sendStatus(QString msg, int code);
 public slots:
-    void receiveSetup(const int device);
+    void receiveSetup(QByteArray device);
     void receiveGrabFrame();
     void receiveToggleStream();
-
-    void receiveEnableBinaryThreshold();
-    void receiveBinaryThreshold(int threshold);
 
 };
 

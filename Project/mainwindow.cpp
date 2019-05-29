@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QFileDialog>
 #include <QTimer>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -28,20 +29,16 @@ void MainWindow::setUpManager()
     thread = new QThread();
     OpencvManager * manager = new OpencvManager();
     QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(1);
+    managerTrigger->setInterval(10);
 
     connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
-    connect(this, SIGNAL(sendSetup(int)), manager, SLOT(receiveSetup(int)));
+    connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
     connect(this, SIGNAL(sendToggleStream()), manager, SLOT(receiveToggleStream()));
     connect(ui->playButton, SIGNAL(clicked(bool)), this, SLOT(receiveToggleStream()));
-    connect(manager, SIGNAL(sendProcessedFrame(QImage)), this, SLOT(receiveProcessedFrame(QImage)));
     connect(manager, SIGNAL(sendSourceFrame(QImage)), this, SLOT(receiveSourceFrame(QImage)));
-    connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), manager, SLOT(receiveBinaryThreshold(int)));
-    connect(ui->enableThresholdCheckbox, SIGNAL(toggled(bool)), manager, SLOT(receiveEnableBinaryThreshold()));
     connect(thread, SIGNAL(finished()), manager, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
 
-    connect(ui->sliderThreshold, SIGNAL(valueChanged(int)), ui->thresholdValue, SLOT(setNum(int)));
 
     managerTrigger->start();
     manager-> moveToThread(thread);
@@ -49,18 +46,17 @@ void MainWindow::setUpManager()
 
     thread->start();
 
-    emit sendSetup(0);
+    //QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
+    QString filename = "aaa";
+    emit sendSetup(filename.toUtf8());
 }
 
-
-void MainWindow::receiveProcessedFrame(QImage frame)
-{
-    ui->videoFieldProcessed->setPixmap(QPixmap::fromImage(frame));
-}
 
 void MainWindow::receiveSourceFrame(QImage frame)
 {
-    ui->videoFieldSource->setPixmap(QPixmap::fromImage(frame));
+    ui->videoFieldSource->setPixmap(QPixmap::fromImage(frame.rgbSwapped()));
+    ui->videoFieldSource->setScaledContents(true);
+    ui->videoFieldSource->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
 
 

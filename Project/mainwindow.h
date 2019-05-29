@@ -23,11 +23,10 @@ private:
     Ui::MainWindow *ui;
     void setUpManager();
 signals:
-    void sendSetup(int device);
+    void sendSetup(QByteArray device);
     void sendToggleStream();
 
 private slots:
-    void receiveProcessedFrame(QImage frame);
     void receiveSourceFrame(QImage frame);
     void receiveToggleStream();
 

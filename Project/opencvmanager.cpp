@@ -1,28 +1,40 @@
 #include "opencvmanager.h"
 
 using namespace cv;
+using namespace std;
 
-OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false), toggleStream(false),
-  binaryThresholdEnable(false), binaryThreshold(127)
+OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false), toggleStream(false)
 {
 
     cap = new cv::VideoCapture();
 
-
-
+     bgsubtractor = createBackgroundSubtractorMOG2();
+    bgsubtractor->setNMixtures(100);
 }
 
 OpencvManager::~OpencvManager()
 {
     if (cap->isOpened()) cap->release();
     delete cap;
+    image.release();
+    bgsubtractor.release();
 }
 
-void OpencvManager::checkIfDeviceAlreadyOpened(const int device)
+void OpencvManager::checkIfDeviceAlreadyOpened(QByteArray device)
 {
-    if (cap->isOpened()) cap->release();
-    cap->open(device);
 
+    if (cap->isOpened()) cap->release();
+ /*
+    if (strcmp(device, "cam") == 0) cap->open(0);
+    else {
+        qDebug(device.toStdString().c_str());
+       cap->open(device.toStdString().c_str());
+    }
+    */
+
+    cap->open("C:/Users/MM/Documents/QtProjects/Qt_Opencv/Project/sample_video.mp4");
+
+    //qDebug(cap->get(CAP_PROP_FPS));
 }
 
 
@@ -33,33 +45,46 @@ void OpencvManager::receiveGrabFrame()
         return;
     }
     cap->read(image);
-    if (image.empty()) return;
-
-
+    if (image.empty()) {
+        cap->set(CV_CAP_PROP_POS_FRAMES, 0);
+        cap->read(image);
+    }
 
     process();
 
-    QImage outputProcessed((const unsigned char *)processedImage.data, processedImage.cols, processedImage.rows, QImage::Format_Indexed8);
     QImage outputSource((const unsigned char *)image.data, image.cols, image.rows, QImage::Format_RGB888);
-
     emit sendSourceFrame(outputSource);
 
-    emit sendProcessedFrame(outputProcessed);
-
 }
+
 
 void OpencvManager::process()
 {
 
-     //set up
-     cvtColor(image, processedImage, CV_BGR2GRAY);
-     cvtColor(image, image,CV_BGR2RGB);
+     Mat processed;
+     bgsubtractor->apply(image, processed);
 
-     if (binaryThresholdEnable)
-        threshold(processedImage, processedImage, binaryThreshold, 255, CV_THRESH_BINARY);
+     morphologyEx(processed, processed, MORPH_OPEN, getStructuringElement(0,Size(3,3)));
+
+     vector<vector<Point> > contours;
+     vector<Vec4i> hierarchy;
+     findContours(processed, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+
+     drawContours(image, contours, -1, Scalar(50, 150, 25));
+
+
+     //debug
+     namedWindow("debug");
+     imshow("debug", processed);
+
+     processed.release();
+
+
+     waitKey(15);
 }
 
-void OpencvManager::receiveSetup(const int device)
+void OpencvManager::receiveSetup(QByteArray device)
 {
     checkIfDeviceAlreadyOpened(device);
     if (!cap->isOpened())
@@ -73,15 +98,6 @@ void OpencvManager::receiveSetup(const int device)
 void OpencvManager::receiveToggleStream()
 {
     toggleStream = !toggleStream;
-}
-
-void OpencvManager::receiveEnableBinaryThreshold(){
-    binaryThresholdEnable = !binaryThresholdEnable;
-}
-
-void OpencvManager::receiveBinaryThreshold(int threshold)
-{
-    binaryThreshold = threshold;
 }
 
 
