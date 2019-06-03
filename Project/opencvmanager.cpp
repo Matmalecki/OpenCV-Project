@@ -62,6 +62,7 @@ void OpencvManager::receiveGrabFrame()
 
 void OpencvManager::process()
 {
+     Scalar lineColor(200,200,10);
      vector<Person> currentFramePeople;
      Mat processed;
      bgsubtractor->apply(image, processed);
@@ -119,6 +120,7 @@ void OpencvManager::process()
                         if (checkIfCrossedLine(people[i].centerPositions, person.centerPositions))
                         {
                             person.counted = true;
+                            lineColor = Scalar(100,100,200);
                         }
                     person.personId = people[i].personId;
                     people[i] = person;
@@ -154,7 +156,7 @@ void OpencvManager::process()
 
      }
 
-     line(image, Point(0,image.rows/2), Point(image.cols, image.rows/2),Scalar(0,100,190),2);
+     line(image, Point(0,image.rows/2), Point(image.cols, image.rows/2),lineColor,2);
 
      putText(image, to_string(countUp), Point(10, 10),1,1,color,2);
      putText(image, to_string(countDown), Point(10, 30),1,1,color,2);
