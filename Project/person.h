@@ -8,14 +8,19 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <vector>
+using namespace cv;
+using namespace std;
 
 class Person {
 
-private:
-    size_t personId;
-
-
 public:
+    size_t personId;
+    Rect currentRect;
+    Point centerPositions;
+    bool counted = false;
+    bool active = true;
+    Person(Rect boundingRect, Point center);
+    void predictNextPosition(void);
 
 };
 

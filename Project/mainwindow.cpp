@@ -29,7 +29,7 @@ void MainWindow::setUpManager()
     thread = new QThread();
     OpencvManager * manager = new OpencvManager();
     QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(10);
+    managerTrigger->setInterval(15);
 
     connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
     connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
