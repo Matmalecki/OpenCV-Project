@@ -8,9 +8,9 @@ OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false)
 
     cap = new VideoCapture();
 
-     bgsubtractor = createBackgroundSubtractorMOG2();
+    bgsubtractor = createBackgroundSubtractorMOG2();
     bgsubtractor->setNMixtures(100);
-        bgsubtractor->setDetectShadows(false);
+    bgsubtractor->setShadowValue(0);
 
 }
 
@@ -66,6 +66,8 @@ void OpencvManager::process()
      Mat processed;
      bgsubtractor->apply(image, processed);
 
+     threshold(processed, processed,128,255, THRESH_BINARY);
+
      morphologyEx(processed, processed, MORPH_OPEN, getStructuringElement(0,Size(3,3)));
 
 
@@ -110,7 +112,8 @@ void OpencvManager::process()
             // check for existing
             for (int i = 0; i < people.size(); i++)
             {
-                if (distanceBetweenPoints(person.centerPositions, people[i].centerPositions) < DISTANCE_OBJECT)
+                if (distanceBetweenPoints(person.centerPositions, people[i].centerPositions) <= person.currentRect.width/2 ||
+                        distanceBetweenPoints(person.centerPositions, people[i].centerPositions) <= person.currentRect.height/2)
                 {
                     if (!people[i].counted)
                         if (checkIfCrossedLine(people[i].centerPositions, person.centerPositions))
