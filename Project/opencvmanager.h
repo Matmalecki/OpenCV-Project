@@ -31,6 +31,8 @@ private:
     int nextId = 1;
     int countUp = 0;
     int countDown = 0;
+    bool isCounting = false;
+
 
     void process();
     void checkIfDeviceAlreadyOpened(QByteArray device);
@@ -42,6 +44,8 @@ public:
 signals:
     void sendSourceFrame(QImage image);
     void sendStatus(QString msg, int code);
+    void sendUpCounter(int countUp);
+    void sendDownCounter(int countDown);
 public slots:
     void receiveSetup(QByteArray device);
     void receiveGrabFrame();

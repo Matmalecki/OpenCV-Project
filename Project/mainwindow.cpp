@@ -38,7 +38,8 @@ void MainWindow::setUpManager()
     connect(manager, SIGNAL(sendSourceFrame(QImage)), this, SLOT(receiveSourceFrame(QImage)));
     connect(thread, SIGNAL(finished()), manager, SLOT(deleteLater()));
     connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
-
+    connect(manager, SIGNAL(sendUpCounter(int)), this, SLOT(receiveUpCount(int)));
+    connect(manager, SIGNAL(sendDownCounter(int)), this, SLOT(receiveDownCount(int)));
 
     managerTrigger->start();
     manager-> moveToThread(thread);
@@ -46,8 +47,8 @@ void MainWindow::setUpManager()
 
     thread->start();
 
-    //QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
-    QString filename = "aaa";
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
     emit sendSetup(filename.toUtf8());
 }
 
@@ -67,4 +68,14 @@ void MainWindow::receiveToggleStream()
     else ui->playButton->setText(">");
 
     emit sendToggleStream();
+}
+
+void MainWindow::receiveUpCount(int count)
+{
+    this->ui->upLabel->setText(QString("Up ") + QString::number(count));
+}
+
+void MainWindow::receiveDownCount(int count)
+{
+    this->ui->downLabel->setText(QString("Down ") + QString::number(count));
 }

@@ -29,6 +29,8 @@ signals:
 private slots:
     void receiveSourceFrame(QImage frame);
     void receiveToggleStream();
+    void receiveUpCount(int count);
+    void receiveDownCount(int count);
 
 };
 

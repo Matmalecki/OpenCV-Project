@@ -26,7 +26,7 @@ void OpencvManager::checkIfDeviceAlreadyOpened(QByteArray device)
 {
 
     if (cap->isOpened()) cap->release();
- /*
+    /*
     if (strcmp(device, "cam") == 0) cap->open(0);
     else {
         qDebug(device.toStdString().c_str());
@@ -82,7 +82,8 @@ void OpencvManager::process()
          vector<Moments> mu;
          for (int i = 0; i < contours.size(); i++)
          {
-             if (contourArea(contours[i]) > 1000)
+             // skip non-human objects
+             if (contourArea(contours[i]) > 1000 && contourArea(contours[i]) < 5000 )
              {
                 boundingRects.push_back(boundingRect(contours[i]));
                 mu.push_back(moments(contours[i],true));
@@ -158,10 +159,7 @@ void OpencvManager::process()
 
      line(image, Point(0,image.rows/2), Point(image.cols, image.rows/2),lineColor,2);
 
-     putText(image, to_string(countUp), Point(10, 10),1,1,color,2);
-     putText(image, to_string(countDown), Point(10, 30),1,1,color,2);
      //drawContours(image, contours, -1, Scalar(50, 150, 25));
-
 
      currentFramePeople.clear();
 
@@ -188,11 +186,15 @@ bool OpencvManager::checkIfCrossedLine(Point prev, Point next){
     if (prev.y > image.cols/2 && next.y <= image.cols/2)
     {
         countUp++;
+        emit sendUpCounter(countUp);
+
+
         return true;
     }
     if (prev.y < image.cols/2 && next.y >= image.cols/2)
     {
         countDown++;
+        emit sendDownCounter(countDown);
         return true;
     }
     return false;
