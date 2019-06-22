@@ -33,6 +33,9 @@ private:
     int countDown = 0;
     bool isCounting = false;
 
+    const int HUMAN_SIZE_MIN = 800;
+    const int HUMAN_SIZE_MAX = 5000;
+
 
     void process();
     void checkIfDeviceAlreadyOpened(QByteArray device);

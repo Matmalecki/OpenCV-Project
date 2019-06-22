@@ -34,6 +34,8 @@ private slots:
     void receiveDownCount(int count);
     void receiveShouldCount(bool shouldCount);
     void receiveClearCount();
+    void receiveVideoFile();
+    void receiveCam();
 };
 
 #endif // MAINWINDOW_H

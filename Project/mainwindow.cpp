@@ -29,7 +29,7 @@ void MainWindow::setUpManager()
     thread = new QThread();
     OpencvManager * manager = new OpencvManager();
     QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(15);
+    managerTrigger->setInterval(20);
 
     connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
     connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
@@ -44,15 +44,28 @@ void MainWindow::setUpManager()
     connect(this, SIGNAL(sendIsCounting(bool)), manager, SLOT(receiveIsCounting(bool)));
     connect(ui->clearCountButton, SIGNAL(clicked(bool)), this, SLOT(receiveClearCount()));
     connect(this, SIGNAL(sendClearCount()), manager, SLOT(receiveClearCount()));
+
+    connect(ui->actionCam, SIGNAL(triggered()), this, SLOT(receiveCam()));
+    connect(ui->actionVideo_File, SIGNAL(triggered()), this, SLOT(receiveVideoFile()));
+
     managerTrigger->start();
     manager-> moveToThread(thread);
     managerTrigger->moveToThread(thread);
 
     thread->start();
 
-    //QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
-    QString filename = "qweqwe";
+
+}
+
+void MainWindow::receiveVideoFile()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi) | Video files (*.mp4)"));
     emit sendSetup(filename.toUtf8());
+}
+
+void MainWindow::receiveCam()
+{
+    emit sendSetup(QString::number(0).toUtf8());
 }
 
 

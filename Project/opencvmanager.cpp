@@ -26,15 +26,13 @@ void OpencvManager::checkIfDeviceAlreadyOpened(QByteArray device)
 {
 
     if (cap->isOpened()) cap->release();
-    /*
-    if (strcmp(device, "cam") == 0) cap->open(0);
+    if (strcmp(device, "0") == 0) cap->open(0);
     else {
-        qDebug(device.toStdString().c_str());
        cap->open(device.toStdString().c_str());
     }
-    */
 
-    cap->open("C:/Users/MM/Documents/QtProjects/Qt_Opencv/Project/sample_video.mp4");
+
+    //cap->open("C:/Users/MM/Documents/QtProjects/Qt_Opencv/Project/sample_video.mp4");
 
     //qDebug(cap->get(CAP_PROP_FPS));
 }
@@ -42,7 +40,7 @@ void OpencvManager::checkIfDeviceAlreadyOpened(QByteArray device)
 
 void OpencvManager::receiveGrabFrame()
 {
-    if (!toggleStream)
+    if (!toggleStream || !status)
     {
         return;
     }
@@ -51,7 +49,6 @@ void OpencvManager::receiveGrabFrame()
         cap->set(CV_CAP_PROP_POS_FRAMES, 0);
         cap->read(image);
     }
-
     process();
 
     QImage outputSource((const unsigned char *)image.data, image.cols, image.rows, QImage::Format_RGB888);
@@ -83,7 +80,8 @@ void OpencvManager::process()
          for (int i = 0; i < contours.size(); i++)
          {
              // skip non-human objects
-             if (contourArea(contours[i]) > 1000 && contourArea(contours[i]) < 5000 )
+             qDebug(to_string(contourArea((contours[i]))).c_str());
+             if (contourArea(contours[i]) > HUMAN_SIZE_MIN && contourArea(contours[i]) < HUMAN_SIZE_MAX )
              {
                 boundingRects.push_back(boundingRect(contours[i]));
                 mu.push_back(moments(contours[i],true));
