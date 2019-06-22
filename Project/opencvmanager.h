@@ -41,6 +41,7 @@ private:
 public:
     explicit OpencvManager(QObject * parent = 0);
     ~OpencvManager();
+
 signals:
     void sendSourceFrame(QImage image);
     void sendStatus(QString msg, int code);
@@ -50,7 +51,8 @@ public slots:
     void receiveSetup(QByteArray device);
     void receiveGrabFrame();
     void receiveToggleStream();
-
+    void receiveIsCounting(bool shouldCount);
+    void receiveClearCount();
 };
 
 

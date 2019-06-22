@@ -118,7 +118,7 @@ void OpencvManager::process()
                         distanceBetweenPoints(person.centerPositions, people[i].centerPositions) <= person.currentRect.height/2)
                 {
                     if (!people[i].counted)
-                        if (checkIfCrossedLine(people[i].centerPositions, person.centerPositions))
+                        if (checkIfCrossedLine(people[i].origin, person.centerPositions))
                         {
                             person.counted = true;
                             lineColor = Scalar(100,100,200);
@@ -185,17 +185,19 @@ bool OpencvManager::checkIfCrossedLine(Point prev, Point next){
 
     if (prev.y > image.cols/2 && next.y <= image.cols/2)
     {
-        countUp++;
-        emit sendUpCounter(countUp);
-
-
+        if (isCounting){
+            countUp++;
+            emit sendUpCounter(countUp);
+        }
         return true;
     }
-    if (prev.y < image.cols/2 && next.y >= image.cols/2)
+    else if (prev.y < image.cols/2 && next.y >= image.cols/2)
     {
-        countDown++;
-        emit sendDownCounter(countDown);
-        return true;
+         if (isCounting) {
+            countDown++;
+            emit sendDownCounter(countDown);
+         }
+         return true;
     }
     return false;
 
@@ -218,4 +220,15 @@ void OpencvManager::receiveToggleStream()
 }
 
 
+void OpencvManager::receiveIsCounting(bool shouldCount)
+{
+    this->isCounting = shouldCount;
+}
+
+
+void OpencvManager::receiveClearCount()
+{
+    this->countUp = 0;
+    this->countDown = 0;
+}
 

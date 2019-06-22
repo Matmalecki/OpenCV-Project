@@ -25,13 +25,15 @@ private:
 signals:
     void sendSetup(QByteArray device);
     void sendToggleStream();
-
+    void sendIsCounting(bool isCounting);
+    void sendClearCount();
 private slots:
     void receiveSourceFrame(QImage frame);
     void receiveToggleStream();
     void receiveUpCount(int count);
     void receiveDownCount(int count);
-
+    void receiveShouldCount(bool shouldCount);
+    void receiveClearCount();
 };
 
 #endif // MAINWINDOW_H

@@ -17,6 +17,7 @@ public:
     size_t personId;
     Rect currentRect;
     Point centerPositions;
+    Point origin;
     bool counted = false;
     bool active = true;
     Person(Rect boundingRect, Point center);

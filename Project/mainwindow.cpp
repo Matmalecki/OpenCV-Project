@@ -40,15 +40,18 @@ void MainWindow::setUpManager()
     connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
     connect(manager, SIGNAL(sendUpCounter(int)), this, SLOT(receiveUpCount(int)));
     connect(manager, SIGNAL(sendDownCounter(int)), this, SLOT(receiveDownCount(int)));
-
+    connect(ui->startCountButton, SIGNAL(clicked(bool)), this, SLOT(receiveShouldCount(bool)));
+    connect(this, SIGNAL(sendIsCounting(bool)), manager, SLOT(receiveIsCounting(bool)));
+    connect(ui->clearCountButton, SIGNAL(clicked(bool)), this, SLOT(receiveClearCount()));
+    connect(this, SIGNAL(sendClearCount()), manager, SLOT(receiveClearCount()));
     managerTrigger->start();
     manager-> moveToThread(thread);
     managerTrigger->moveToThread(thread);
 
     thread->start();
 
-
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
+    //QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi)"));
+    QString filename = "qweqwe";
     emit sendSetup(filename.toUtf8());
 }
 
@@ -78,4 +81,25 @@ void MainWindow::receiveUpCount(int count)
 void MainWindow::receiveDownCount(int count)
 {
     this->ui->downLabel->setText(QString("Down ") + QString::number(count));
+}
+
+void MainWindow::receiveShouldCount(bool shouldCount)
+{
+    if (!ui->startCountButton->text().compare("-"))
+    {
+        ui->startCountButton->setText("Counting");
+        emit sendIsCounting(true);
+    }else {
+        ui->startCountButton->setText("-");
+        emit sendIsCounting(false);
+    }
+
+}
+
+void MainWindow::receiveClearCount()
+{
+    this->ui->upLabel->setText(QString("Up 0"));
+    this->ui->downLabel->setText(QString("Down 0"));
+
+    emit sendClearCount();
 }
