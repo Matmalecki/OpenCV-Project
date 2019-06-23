@@ -14,4 +14,4 @@ Zasada działania:
 
 W folderze Project/video są dwa przykładowe pliki video w formatach mp4 i avi. Na nich program był testowany.
 
-Program dobrze radzi sobie z wykrywaniem i zliczaniem ludzi w standardowych warunkach. Niestety w sytuacjach w których odległości między ludźmi są bardzo małe, albo gdy ludzie mają przy sobie wielkie gabarytowo przedmioty np. wózek  detekcja może być niedokładna.
+Program dobrze radzi sobie z wykrywaniem i zliczaniem ludzi w standardowych warunkach. Niestety w sytuacjach, w których odległości między ludźmi są bardzo małe albo gdy ludzie mają przy sobie wielkie gabarytowo przedmioty np. wózek,  detekcja może być niedokładna. 
