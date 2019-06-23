@@ -32,14 +32,14 @@ private:
     int countUp = 0;
     int countDown = 0;
     bool isCounting = false;
+    bool debugWindow = false;
 
-    const int HUMAN_SIZE_MIN = 1200;
-    const int HUMAN_SIZE_MAX = 5000;
+    const int HUMAN_SIZE_MIN = 950;
+    const int HUMAN_SIZE_MAX = 5800;
 
 
     void process();
     void checkIfDeviceAlreadyOpened(QByteArray device);
-    double distanceBetweenPoints(Point p1, Point p2);
     bool checkIfCrossedLine(Point p1, Point p2);
 public:
     explicit OpencvManager(QObject * parent = 0);
@@ -56,6 +56,7 @@ public slots:
     void receiveToggleStream();
     void receiveIsCounting(bool shouldCount);
     void receiveClearCount();
+    void receiveToggleDebug();
 };
 
 

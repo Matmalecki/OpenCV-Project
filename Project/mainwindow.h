@@ -25,6 +25,7 @@ private:
 signals:
     void sendSetup(QByteArray device);
     void sendToggleStream();
+    void sendToggleDebug();
     void sendIsCounting(bool isCounting);
     void sendClearCount();
 private slots:
@@ -36,6 +37,7 @@ private slots:
     void receiveClearCount();
     void receiveVideoFile();
     void receiveCam();
+    void receiveToggleDebug();
 };
 
 #endif // MAINWINDOW_H

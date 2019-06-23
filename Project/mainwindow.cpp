@@ -29,7 +29,7 @@ void MainWindow::setUpManager()
     thread = new QThread();
     OpencvManager * manager = new OpencvManager();
     QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(12);
+    managerTrigger->setInterval(30);
 
     connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
     connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
@@ -47,6 +47,9 @@ void MainWindow::setUpManager()
 
     connect(ui->actionCam, SIGNAL(triggered()), this, SLOT(receiveCam()));
     connect(ui->actionVideo_File, SIGNAL(triggered()), this, SLOT(receiveVideoFile()));
+
+    connect(ui->actionDebug_window, SIGNAL(triggered()),this, SLOT(receiveToggleDebug()));
+    connect(this, SIGNAL(sendToggleDebug()), manager, SLOT(receiveToggleDebug()));
 
     managerTrigger->start();
     manager-> moveToThread(thread);
@@ -98,12 +101,12 @@ void MainWindow::receiveDownCount(int count)
 
 void MainWindow::receiveShouldCount(bool shouldCount)
 {
-    if (!ui->startCountButton->text().compare("-"))
+    if (!ui->startCountButton->text().compare("Count"))
     {
         ui->startCountButton->setText("Counting");
         emit sendIsCounting(true);
     }else {
-        ui->startCountButton->setText("-");
+        ui->startCountButton->setText("Count");
         emit sendIsCounting(false);
     }
 
@@ -115,4 +118,9 @@ void MainWindow::receiveClearCount()
     this->ui->downLabel->setText(QString("Down 0"));
 
     emit sendClearCount();
+}
+
+void MainWindow::receiveToggleDebug()
+{
+    emit sendToggleDebug();
 }

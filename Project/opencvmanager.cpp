@@ -12,6 +12,8 @@ OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false)
     bgsubtractor->setNMixtures(100);
     bgsubtractor->setShadowValue(0);
 
+
+
 }
 
 OpencvManager::~OpencvManager()
@@ -49,7 +51,7 @@ void OpencvManager::receiveGrabFrame()
         cap->set(CV_CAP_PROP_POS_FRAMES, 0);
         cap->read(image);
     }
-    //resize(image, image, Size(image.cols/2, image.rows/2));
+
     process();
 
     QImage outputSource((const unsigned char *)image.data, image.cols, image.rows, QImage::Format_RGB888);
@@ -60,16 +62,16 @@ void OpencvManager::receiveGrabFrame()
 
 void OpencvManager::process()
 {
-     Scalar lineColor(200,200,10);
+     Scalar lineColor(100,200,110);
      vector<Person> currentFramePeople;
      Mat processed;
      bgsubtractor->apply(image, processed);
 
-     threshold(processed, processed,128,255, THRESH_BINARY);
+     threshold(processed, processed,55,255, THRESH_BINARY);
 
      morphologyEx(processed, processed, MORPH_OPEN, getStructuringElement(0,Size(3,3)));
 
-     blur(processed, processed, Size(5,5));
+
 
      vector<vector<Point> > contours;
      vector<Vec4i> hierarchy;
@@ -79,6 +81,15 @@ void OpencvManager::process()
      {
          vector<Rect> boundingRects;
          vector<Moments> mu;
+
+
+         for (int i = 0 ; i < contours.size(); i++)
+         {
+               drawContours(processed, contours, i, Scalar(255,255,255), CV_FILLED);
+
+         }
+
+              blur(processed, processed, Size(5,5));
 
          for (int i = 0; i < contours.size(); i++)
          {
@@ -115,8 +126,10 @@ void OpencvManager::process()
             // check for existing
             for (int i = 0; i < people.size(); i++)
             {
-                if (distanceBetweenPoints(person.centerPositions, people[i].centerPositions) <= person.currentRect.width/2 ||
-                        distanceBetweenPoints(person.centerPositions, people[i].centerPositions) <= person.currentRect.height/2)
+                if (people[i].active)
+                    continue;
+                if (norm(person.centerPositions - people[i].centerPositions) <= person.currentRect.width/2 ||
+                        norm(person.centerPositions - people[i].centerPositions) <= person.currentRect.height/2)
                 {
                     if (!people[i].counted)
                         if (checkIfCrossedLine(people[i].origin, person.centerPositions))
@@ -154,7 +167,6 @@ void OpencvManager::process()
         for (auto& person : people)
         {
             rectangle(image,person.currentRect.tl(),person.currentRect.br(),color);
-            putText(image, to_string(person.personId), person.centerPositions,1,1,color);
             circle(image, person.centerPositions,1, color);
         }
 
@@ -162,24 +174,11 @@ void OpencvManager::process()
 
      line(image, Point(0,image.rows/2), Point(image.cols, image.rows/2),lineColor,2);
 
-     //drawContours(image, contours, -1, Scalar(50, 150, 25));
-
      currentFramePeople.clear();
-
-     imshow("debug", processed);
+     if (debugWindow)
+        imshow("debug", processed);
      processed.release();
 
-
-
-     waitKey(25);
-}
-
-double OpencvManager::distanceBetweenPoints(Point p1, Point p2)
-{
-    int intX = abs(p1.x - p2.x);
-    int intY = abs(p1.y - p2.y);
-
-    return(sqrt(pow(intX, 2) + pow(intY, 2)));
 }
 
 bool OpencvManager::checkIfCrossedLine(Point prev, Point next){
@@ -218,6 +217,13 @@ void OpencvManager::receiveSetup(QByteArray device)
 void OpencvManager::receiveToggleStream()
 {
     toggleStream = !toggleStream;
+}
+
+void OpencvManager::receiveToggleDebug()
+{
+    debugWindow = !debugWindow;
+    if (!debugWindow)
+        destroyAllWindows();
 }
 
 
