@@ -29,7 +29,7 @@ void MainWindow::setUpManager()
     thread = new QThread();
     OpencvManager * manager = new OpencvManager();
     QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(20);
+    managerTrigger->setInterval(12);
 
     connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
     connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
@@ -59,7 +59,7 @@ void MainWindow::setUpManager()
 
 void MainWindow::receiveVideoFile()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi) | Video files (*.mp4)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Video"), "/Users/MM/Documents/", tr("Video files (*.avi *.mp4)"));
     emit sendSetup(filename.toUtf8());
 }
 

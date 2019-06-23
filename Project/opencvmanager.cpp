@@ -49,6 +49,7 @@ void OpencvManager::receiveGrabFrame()
         cap->set(CV_CAP_PROP_POS_FRAMES, 0);
         cap->read(image);
     }
+    //resize(image, image, Size(image.cols/2, image.rows/2));
     process();
 
     QImage outputSource((const unsigned char *)image.data, image.cols, image.rows, QImage::Format_RGB888);
@@ -68,6 +69,7 @@ void OpencvManager::process()
 
      morphologyEx(processed, processed, MORPH_OPEN, getStructuringElement(0,Size(3,3)));
 
+     blur(processed, processed, Size(5,5));
 
      vector<vector<Point> > contours;
      vector<Vec4i> hierarchy;
@@ -77,10 +79,10 @@ void OpencvManager::process()
      {
          vector<Rect> boundingRects;
          vector<Moments> mu;
+
          for (int i = 0; i < contours.size(); i++)
          {
              // skip non-human objects
-             qDebug(to_string(contourArea((contours[i]))).c_str());
              if (contourArea(contours[i]) > HUMAN_SIZE_MIN && contourArea(contours[i]) < HUMAN_SIZE_MAX )
              {
                 boundingRects.push_back(boundingRect(contours[i]));
@@ -98,6 +100,7 @@ void OpencvManager::process()
           for( int i = 0; i < mu.size(); i++ )
              {
                currentFramePeople.push_back(Person(boundingRects[i], momentsCenters[i]));
+
              }
 
 
@@ -132,6 +135,8 @@ void OpencvManager::process()
                 person.active = true;
                 person.personId = nextId;
                 nextId++;
+                if (nextId > 100)
+                    nextId = 1;
                 people.push_back(person);
             }
         }
@@ -161,14 +166,12 @@ void OpencvManager::process()
 
      currentFramePeople.clear();
 
-     //debug
-     namedWindow("debug");
      imshow("debug", processed);
-
      processed.release();
 
 
-     waitKey(15);
+
+     waitKey(25);
 }
 
 double OpencvManager::distanceBetweenPoints(Point p1, Point p2)
