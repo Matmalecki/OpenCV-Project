@@ -3,7 +3,7 @@
 using namespace cv;
 using namespace std;
 
-OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false), toggleStream(false), color(255,0,255)
+OpencvManager::OpencvManager(QObject * parent) : QObject (parent), status(false), toggleStream(false), color(122,255,255)
 {
 
     cap = new VideoCapture();
@@ -32,11 +32,6 @@ void OpencvManager::checkIfDeviceAlreadyOpened(QByteArray device)
     else {
        cap->open(device.toStdString().c_str());
     }
-
-
-    //cap->open("C:/Users/MM/Documents/QtProjects/Qt_Opencv/Project/sample_video.mp4");
-
-    //qDebug(cap->get(CAP_PROP_FPS));
 }
 
 
@@ -85,11 +80,9 @@ void OpencvManager::process()
 
          for (int i = 0 ; i < contours.size(); i++)
          {
-               drawContours(processed, contours, i, Scalar(255,255,255), CV_FILLED);
-
+            drawContours(processed, contours, i, Scalar(255,255,255), CV_FILLED);
          }
-
-              blur(processed, processed, Size(5,5));
+         blur(processed, processed, Size(5,5));
 
          for (int i = 0; i < contours.size(); i++)
          {
@@ -163,7 +156,6 @@ void OpencvManager::process()
         }
 
         // draw
-
         for (auto& person : people)
         {
             rectangle(image,person.currentRect.tl(),person.currentRect.br(),color);
