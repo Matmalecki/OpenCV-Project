@@ -115,15 +115,18 @@ void OpencvManager::process()
 
         for (auto& person : currentFramePeople)
         {
-
+            bool deletePerson = false;
             // check for existing
             for (int i = 0; i < people.size(); i++)
             {
-                if (people[i].active)
-                    continue;
                 if (norm(person.centerPositions - people[i].centerPositions) <= person.currentRect.width/2 ||
                         norm(person.centerPositions - people[i].centerPositions) <= person.currentRect.height/2)
                 {
+                    if (people[i].active){
+
+                        deletePerson = true;
+                        break;
+                    }
                     if (!people[i].counted)
                         if (checkIfCrossedLine(people[i].origin, person.centerPositions))
                         {
@@ -135,8 +138,9 @@ void OpencvManager::process()
                     people[i].active = true;
                 }
             }
+
             // Add new person
-            if (person.personId == 0)
+            if (person.personId == 0 && !deletePerson)
             {
                 person.active = true;
                 person.personId = nextId;
@@ -175,7 +179,8 @@ void OpencvManager::process()
 
 bool OpencvManager::checkIfCrossedLine(Point prev, Point next){
 
-    if (prev.y > image.cols/2 && next.y <= image.cols/2)
+    // Going up
+    if (prev.y > image.cols/2 - 30 && next.y <= image.cols/2 - 30)
     {
         if (isCounting){
             countUp++;
@@ -183,7 +188,8 @@ bool OpencvManager::checkIfCrossedLine(Point prev, Point next){
         }
         return true;
     }
-    else if (prev.y < image.cols/2 && next.y >= image.cols/2)
+    // going down
+    else if (prev.y < image.cols/2 - 40 && next.y >= image.cols/2 - 40)
     {
          if (isCounting) {
             countDown++;
