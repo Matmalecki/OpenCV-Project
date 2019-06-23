@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    thread = new QThread();
     setUpManager();
 }
 
@@ -26,34 +27,34 @@ MainWindow::~MainWindow()
 
 void MainWindow::setUpManager()
 {
-    thread = new QThread();
-    OpencvManager * manager = new OpencvManager();
-    QTimer * managerTrigger = new QTimer();
-    managerTrigger->setInterval(30);
 
-    connect(managerTrigger, SIGNAL(timeout()), manager, SLOT(receiveGrabFrame()));
-    connect(this, SIGNAL(sendSetup(QByteArray)), manager, SLOT(receiveSetup(QByteArray)));
-    connect(this, SIGNAL(sendToggleStream()), manager, SLOT(receiveToggleStream()));
+    OpencvManager * cvManager = new OpencvManager();
+    QTimer * trigger = new QTimer();
+    trigger->setInterval(30);
+
+    connect(trigger, SIGNAL(timeout()), cvManager, SLOT(receiveGrabFrame()));
+    connect(this, SIGNAL(sendSetup(QByteArray)), cvManager, SLOT(receiveSetup(QByteArray)));
+    connect(this, SIGNAL(sendToggleStream()), cvManager, SLOT(receiveToggleStream()));
     connect(ui->playButton, SIGNAL(clicked(bool)), this, SLOT(receiveToggleStream()));
-    connect(manager, SIGNAL(sendSourceFrame(QImage)), this, SLOT(receiveSourceFrame(QImage)));
-    connect(thread, SIGNAL(finished()), manager, SLOT(deleteLater()));
-    connect(thread, SIGNAL(finished()), managerTrigger, SLOT(deleteLater()));
-    connect(manager, SIGNAL(sendUpCounter(int)), this, SLOT(receiveUpCount(int)));
-    connect(manager, SIGNAL(sendDownCounter(int)), this, SLOT(receiveDownCount(int)));
+    connect(cvManager, SIGNAL(sendSourceFrame(QImage)), this, SLOT(receiveSourceFrame(QImage)));
+    connect(thread, SIGNAL(finished()), cvManager, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), trigger, SLOT(deleteLater()));
+    connect(cvManager, SIGNAL(sendUpCounter(int)), this, SLOT(receiveUpCount(int)));
+    connect(cvManager, SIGNAL(sendDownCounter(int)), this, SLOT(receiveDownCount(int)));
     connect(ui->startCountButton, SIGNAL(clicked(bool)), this, SLOT(receiveShouldCount(bool)));
-    connect(this, SIGNAL(sendIsCounting(bool)), manager, SLOT(receiveIsCounting(bool)));
+    connect(this, SIGNAL(sendIsCounting(bool)), cvManager, SLOT(receiveIsCounting(bool)));
     connect(ui->clearCountButton, SIGNAL(clicked(bool)), this, SLOT(receiveClearCount()));
-    connect(this, SIGNAL(sendClearCount()), manager, SLOT(receiveClearCount()));
+    connect(this, SIGNAL(sendClearCount()), cvManager, SLOT(receiveClearCount()));
 
     connect(ui->actionCam, SIGNAL(triggered()), this, SLOT(receiveCam()));
     connect(ui->actionVideo_File, SIGNAL(triggered()), this, SLOT(receiveVideoFile()));
 
     connect(ui->actionDebug_window, SIGNAL(triggered()),this, SLOT(receiveToggleDebug()));
-    connect(this, SIGNAL(sendToggleDebug()), manager, SLOT(receiveToggleDebug()));
+    connect(this, SIGNAL(sendToggleDebug()), cvManager, SLOT(receiveToggleDebug()));
 
-    managerTrigger->start();
-    manager-> moveToThread(thread);
-    managerTrigger->moveToThread(thread);
+    trigger->start();
+    cvManager-> moveToThread(thread);
+    trigger->moveToThread(thread);
 
     thread->start();
 
@@ -83,8 +84,8 @@ void MainWindow::receiveSourceFrame(QImage frame)
 
 void MainWindow::receiveToggleStream()
 {
-    if (!ui->playButton->text().compare(">")) ui->playButton->setText("||");
-    else ui->playButton->setText(">");
+    if (!ui->playButton->text().compare("Play")) ui->playButton->setText("Pause");
+    else ui->playButton->setText("Play");
 
     emit sendToggleStream();
 }

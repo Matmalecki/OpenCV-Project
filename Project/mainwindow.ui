@@ -30,7 +30,7 @@
     <item row="0" column="0">
      <widget class="QPushButton" name="playButton">
       <property name="text">
-       <string>&gt;</string>
+       <string>Play</string>
       </property>
      </widget>
     </item>
