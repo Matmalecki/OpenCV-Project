@@ -102,10 +102,9 @@ void OpencvManager::process()
           }
 
           for( int i = 0; i < mu.size(); i++ )
-             {
+          {
                currentFramePeople.push_back(Person(boundingRects[i], momentsCenters[i]));
-
-             }
+          }
 
 
           for (auto& person : people)
